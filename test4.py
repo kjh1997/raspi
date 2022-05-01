@@ -8,3 +8,6 @@ cv2.imshow("Test img Edge", img_canny)
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()
+
+
+#  https://fishpoint.tistory.com/6082
