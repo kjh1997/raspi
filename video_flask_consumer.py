@@ -1,7 +1,7 @@
 import argparse
 import os
 
-from flask import Flask, Response
+from flask import Flask, Response, render_template
 from kafka import KafkaConsumer
 
 
@@ -11,7 +11,7 @@ if __name__ == "__main__":
 	args = parser.parse_args()
 
 	# Broker 서버의 IP 주소와 사용할 topic 설정을 읽어옵니다
-	server_ip = os.environ.get("SERVER_IP")
+	server_ip = '3.39.177.50'
 	topic = args.topic
 
 	consumer = KafkaConsumer(topic, bootstrap_servers=f'{server_ip}:9092')
@@ -23,10 +23,14 @@ if __name__ == "__main__":
 			yield(b'--frame\r\n'
 				b'Content-Type: image/jpeg\r\n\r\n' + message.value + b'\r\n\r\n')
 
+	@app.route('/video_feed')
+	def video_feed():
+		return Response(kafkastream(), mimetype='multipart/x-mixed-replace; boundary=frame')
+	
 	@app.route('/')
 	def index():
-		return Response(kafkastream(), mimetype='multipart/x-mixed-replace; boundary=frame')
+		return render_template('index.html')
 
 
 	if __name__ == '__main__':
-		app.run(host='0.0.0.0')
+		app.run(host='0.0.0.0', debug=True)
